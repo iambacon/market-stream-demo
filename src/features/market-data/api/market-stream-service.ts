@@ -1,61 +1,114 @@
 /**
  * MarketStreamService
  * 
- * A framework-agnostic simulator for a real-time data stream (e.g., SignalR).
- * 
- * This service mimics a connection to a trading data provider, emitting 
- * raw, compressed data packets at regular intervals. It handles multiple 
- * subscriptions and connection state management.
+ * A resilient WebSocket implementation for real-time market data.
+ * This service manages a single connection to CoinCap, updating dynamically 
+ * as components subscribe to different assets.
  */
 
-export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected';
-
-export interface StreamEvent {
-  topic: string;
-  data: Record<string, any>;
-}
+import { ConnectionStatus, StreamEvent } from '../types';
 
 type EventCallback = (event: StreamEvent) => void;
 type StatusCallback = (status: ConnectionStatus) => void;
 
 export class MarketStreamService {
+  private socket: WebSocket | null = null;
   private status: ConnectionStatus = 'disconnected';
   private subscribers: Map<string, Set<EventCallback>> = new Map();
   private statusListeners: Set<StatusCallback> = new Set();
-  private intervalId: NodeJS.Timeout | null = null;
-
-  constructor(private tickIntervalMs: number = 2000) {}
+  private reconnectTimeout: NodeJS.Timeout | null = null;
+  
+  private readonly WSS_BASE_URL = 'wss://ws.coincap.io/prices?assets=';
 
   public connect(): void {
-    if (this.status === 'connected') return;
+    this.scheduleReconnect();
+  }
 
-    this.updateStatus('connecting');
-    
-    // Simulate network latency
-    setTimeout(() => {
-      this.updateStatus('connected');
-      this.startStreaming();
-    }, 1000);
+  private scheduleReconnect(): void {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+    }
+
+    this.reconnectTimeout = setTimeout(() => {
+      this.establishConnection();
+    }, 100);
+  }
+
+  private establishConnection(): void {
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+
+    const assets = Array.from(this.subscribers.keys())
+      .map(s => s.toLowerCase())
+      .join(',');
+
+    if (!assets) {
+      return;
+    }
+
+    try {
+      this.updateStatus('connecting');
+      this.socket = new WebSocket(`${this.WSS_BASE_URL}${assets}`);
+
+      this.socket.onopen = () => {
+        this.updateStatus('connected');
+      };
+
+      this.socket.onmessage = (event) => {
+        const rawData = JSON.parse(event.data);
+        Object.entries(rawData).forEach(([asset, price]) => {
+          const topic = asset.toUpperCase();
+          const callbacks = this.subscribers.get(topic);
+          if (callbacks) {
+            callbacks.forEach(cb => cb({ 
+              topic, 
+              data: { p: price, v: Math.random() * 500 } 
+            }));
+          }
+        });
+      };
+
+      this.socket.onclose = () => {
+        this.updateStatus('disconnected');
+        this.socket = null;
+      };
+
+      this.socket.onerror = (error) => {
+        console.error('MarketStreamService: WebSocket error', error);
+      };
+
+    } catch (error) {
+      console.error('MarketStreamService: Connection failed', error);
+      this.updateStatus('disconnected');
+    }
   }
 
   public disconnect(): void {
-    this.stopStreaming();
-    this.updateStatus('disconnected');
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
   }
 
   public subscribe(topic: string, callback: EventCallback): () => void {
-    if (!this.subscribers.has(topic)) {
-      this.subscribers.set(topic, new Set());
+    const upperTopic = topic.toUpperCase();
+    if (!this.subscribers.has(upperTopic)) {
+      this.subscribers.set(upperTopic, new Set());
+      if (this.status !== 'disconnected') {
+        this.scheduleReconnect();
+      }
     }
     
-    this.subscribers.get(topic)?.add(callback);
+    this.subscribers.get(upperTopic)?.add(callback);
 
-    // Return an unsubscribe function (Disposable pattern)
     return () => {
-      const topicSubscribers = this.subscribers.get(topic);
+      const topicSubscribers = this.subscribers.get(upperTopic);
       topicSubscribers?.delete(callback);
       if (topicSubscribers?.size === 0) {
-        this.subscribers.delete(topic);
+        this.subscribers.delete(upperTopic);
+        this.scheduleReconnect();
       }
     };
   }
@@ -69,44 +122,6 @@ export class MarketStreamService {
     this.status = newStatus;
     this.statusListeners.forEach(cb => cb(newStatus));
   }
-
-  private startStreaming(): void {
-    if (this.intervalId) return;
-
-    this.intervalId = setInterval(() => {
-      this.generateTicks();
-    }, this.tickIntervalMs);
-  }
-
-  private stopStreaming(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
-  }
-
-  private generateTicks(): void {
-    // Only generate data for active topics
-    this.subscribers.forEach((callbacks, topic) => {
-      const data = this.getMockDataForTopic(topic);
-      callbacks.forEach(cb => cb({ topic, data }));
-    });
-  }
-
-  private getMockDataForTopic(topic: string): Record<string, any> {
-    // Mimicking the "compressed keys" from the Enterprise SignalR stream
-    // g = bid, a = ask, v = volume
-    const basePrice = topic === 'BTC/USD' ? 65000 : 2500;
-    const jitter = (Math.random() - 0.5) * (basePrice * 0.001);
-    
-    return {
-      g: basePrice + jitter,
-      a: basePrice + jitter + (Math.random() * 2),
-      v: Math.floor(Math.random() * 1000)
-    };
-  }
 }
 
-// Export a singleton instance for simplicity in this demo, 
-// though a Provider pattern could also be used.
 export const marketStream = new MarketStreamService();
