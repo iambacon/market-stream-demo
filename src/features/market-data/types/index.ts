@@ -36,3 +36,9 @@ export interface StreamEvent {
   topic: string;
   data: Record<string, any>;
 }
+
+export interface Asset {
+  id: string;
+  symbol: string;
+  name: string;
+}
