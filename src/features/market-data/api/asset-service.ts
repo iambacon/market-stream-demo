@@ -1,8 +1,5 @@
 import { Asset } from '../types';
 
-/**
- * Common Bitfinex Trading Pairs
- */
 const BITFINEX_ASSETS: Asset[] = [
   { id: 'BTCUSD', symbol: 'BTC', name: 'Bitcoin / USD' },
   { id: 'ETHUSD', symbol: 'ETH', name: 'Ethereum / USD' },
@@ -14,15 +11,26 @@ const BITFINEX_ASSETS: Asset[] = [
   { id: 'AVAXUSD', symbol: 'AVAX', name: 'Avalanche / USD' },
 ];
 
-/**
- * AssetService
- * 
- * Updated for Bitfinex compatibility. 
- * Provides top-tier pairs for the live WebSocket stream.
- */
 export async function getTopAssets(): Promise<Asset[]> {
-  // In a production app, we would fetch the full list of symbols 
-  // from https://api-pub.bitfinex.com/v2/conf/pub:list:pair:exchange
-  // For this demo, we use a curated list to ensure high-quality stream data.
   return BITFINEX_ASSETS;
+}
+
+/**
+ * getAssetHistory
+ * 
+ * Fetches historical snapshots via our internal server-side proxy.
+ * Bypasses CORS and provides an additional layer of resilience.
+ */
+export async function getAssetHistory(symbol: string, limit = 30) {
+  try {
+    // Calling our internal Next.js API route
+    const response = await fetch(`/api/market/history?symbol=${symbol}&limit=${limit}`);
+    
+    if (!response.ok) throw new Error('Proxy history fetch failed');
+    
+    return await response.json();
+  } catch (error) {
+    console.error('AssetService: Failed to fetch history via proxy for', symbol, error);
+    return [];
+  }
 }
