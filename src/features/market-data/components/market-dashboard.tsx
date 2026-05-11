@@ -1,10 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { MarketCard } from './market-card';
+import { MarketGrid } from './market-grid';
 import { AssetSearch } from './asset-search';
 import { TransformerConfig } from '../types';
 import { Separator } from '@/features/shared/ui/separator';
 import { useWatchlist } from '../hooks/use-watchlist';
+import { Tabs, TabsList, TabsTrigger } from '@/features/shared/ui/tabs';
+import { LayoutGrid, List } from 'lucide-react';
+import { useMarketGrid } from '../hooks/use-market-grid';
 
 const MARKET_CONFIG: TransformerConfig = {
   mappings: [
@@ -17,6 +22,10 @@ const MARKET_CONFIG: TransformerConfig = {
 
 export function MarketDashboard() {
   const { watchlist, addAsset, removeAsset, isLoaded } = useWatchlist();
+  const [viewMode, setViewMode] = useState<'cards' | 'grid'>('cards');
+  
+  // Use refactored hook that returns raw data map
+  const { rawDataMap } = useMarketGrid(watchlist);
 
   if (!isLoaded) {
     return (
@@ -35,13 +44,29 @@ export function MarketDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+        <div className="flex flex-col gap-1">
           <h2 className="text-2xl font-bold tracking-tight">Live Trading Dashboard</h2>
           <p className="text-muted-foreground text-sm">
             Real-time institutional price streams via Bitfinex WebSocket API.
           </p>
         </div>
-        <AssetSearch onSelect={addAsset} excludeIds={watchlist} />
+        
+        <div className="flex items-center gap-2">
+          <AssetSearch onSelect={addAsset} excludeIds={watchlist} />
+          
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-fit">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="cards" className="gap-2">
+                <LayoutGrid className="h-4 w-4" />
+                <span className="hidden sm:inline">Cards</span>
+              </TabsTrigger>
+              <TabsTrigger value="grid" className="gap-2">
+                <List className="h-4 w-4" />
+                <span className="hidden sm:inline">Grid</span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
       
       <Separator />
@@ -52,26 +77,35 @@ export function MarketDashboard() {
           <p className="text-sm text-muted-foreground">Use the search box above to add trading pairs.</p>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {watchlist.map((symbol) => (
-            <MarketCard 
-              key={symbol} 
-              symbol={symbol} 
+        <>
+          {viewMode === 'cards' ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {watchlist.map((symbol) => (
+                <MarketCard 
+                  key={symbol} 
+                  symbol={symbol} 
+                  config={MARKET_CONFIG} 
+                  onRemove={() => removeAsset(symbol)}
+                />
+              ))}
+            </div>
+          ) : (
+            <MarketGrid 
+              symbols={watchlist} 
+              rawDataMap={rawDataMap} 
               config={MARKET_CONFIG} 
-              onRemove={() => removeAsset(symbol)}
             />
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       <div className="rounded-xl border bg-card p-4 text-card-foreground shadow">
-        <h3 className="text-sm font-semibold mb-2">Architectural Highlight: Message-Based Streams</h3>
+        <h3 className="text-sm font-semibold mb-2">Architectural Highlight: The Grid Transformation</h3>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Unlike basic polling or URL-based sockets, this dashboard uses an institutional 
-          <strong> Message-Based WebSocket</strong>. A single persistent connection is 
-          maintained, and JSON subscription messages are dispatched over the pipe to 
-          dynamically toggle assets. This is the same pattern used in professional 
-          <strong> SignalR</strong> trading environments.
+          The Grid view above uses the same <strong>DataTransformer</strong> as the cards, but 
+          utilizes the <strong>toMatrix()</strong> method to generate a professional, row-based 
+          output. This demonstrates the <strong>Dry Principle</strong> (Don\'t Repeat Yourself) 
+          applied to core business logic across different presentation layers.
         </p>
       </div>
     </div>
