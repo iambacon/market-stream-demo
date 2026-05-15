@@ -9,7 +9,6 @@ import { Separator } from '@/features/shared/ui/separator';
 import { useWatchlist } from '../hooks/use-watchlist';
 import { Tabs, TabsList, TabsTrigger } from '@/features/shared/ui/tabs';
 import { LayoutGrid, List } from 'lucide-react';
-import { useMarketGrid } from '../hooks/use-market-grid';
 
 const MARKET_CONFIG: TransformerConfig = {
   mappings: [
@@ -23,9 +22,6 @@ const MARKET_CONFIG: TransformerConfig = {
 export function MarketDashboard() {
   const { watchlist, addAsset, removeAsset, isLoaded } = useWatchlist();
   const [viewMode, setViewMode] = useState<'cards' | 'grid'>('cards');
-  
-  // Use refactored hook that returns raw data map
-  const { rawDataMap } = useMarketGrid(watchlist);
 
   if (!isLoaded) {
     return (
@@ -92,7 +88,6 @@ export function MarketDashboard() {
           ) : (
             <MarketGrid 
               symbols={watchlist} 
-              rawDataMap={rawDataMap} 
               config={MARKET_CONFIG} 
             />
           )}
@@ -100,12 +95,12 @@ export function MarketDashboard() {
       )}
 
       <div className="rounded-xl border bg-card p-4 text-card-foreground shadow">
-        <h3 className="text-sm font-semibold mb-2">Architectural Highlight: The Grid Transformation</h3>
+        <h3 className="text-sm font-semibold mb-2">Architectural Highlight: Atomic Rendering</h3>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          The Grid view above uses the same <strong>DataTransformer</strong> as the cards, but 
-          utilizes the <strong>toMatrix()</strong> method to generate a professional, row-based 
-          output. This demonstrates the <strong>Dry Principle</strong> (Don\'t Repeat Yourself) 
-          applied to core business logic across different presentation layers.
+          This dashboard implements <strong>Atomic Rendering</strong> combined with the <strong>React Compiler</strong>. 
+          Each card and grid row manages its own data subscription. This ensures that a price 
+          update for one asset only re-renders that specific component, preventing expensive 
+          global re-renders and maintaining a smooth 60fps UI even under high-frequency load.
         </p>
       </div>
     </div>
