@@ -15,7 +15,7 @@ interface MarketGridRowProps {
 /**
  * MarketGridRow
  * 
- * An atomized row component that subscribes to its own data stream.
+ * An atomised row component that subscribes to its own data stream.
  * Ensures that price updates only trigger a re-render of this specific row.
  */
 export function MarketGridRow({ symbol, config }: MarketGridRowProps) {
@@ -85,7 +85,7 @@ export function MarketGridRow({ symbol, config }: MarketGridRowProps) {
         >
           {typeof cell === 'number' 
             ? cell.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
-            : cell}
+            : String(cell)}
         </TableCell>
       ))}
     </TableRow>

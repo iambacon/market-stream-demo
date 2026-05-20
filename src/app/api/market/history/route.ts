@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     const data = await response.json();
     
     // Map Bitfinex format: [ID, MTS, AMOUNT, PRICE]
-    const history = data.map((t: any) => ({
+    const history = data.map((t: [number, number, number, number]) => ({
       value: t[3],
       timestamp: new Date(t[1]).toISOString(),
     })).reverse();

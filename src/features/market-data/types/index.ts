@@ -11,7 +11,7 @@ export interface DataMapping {
   /** The human-readable label (e.g., "Bid") */
   label: string;
   /** Optional formatter function for the value (e.g., price rounding) */
-  formatter?: (value: any) => string;
+  formatter?: (value: unknown) => string;
 }
 
 export interface TransformerConfig {
@@ -25,16 +25,16 @@ export interface TransformerConfig {
  * Represents a transformed market data record.
  * Using a Record to allow dynamic keys based on the labels in mappings.
  */
-export type TransformedMarketData = Record<string, any>;
+export type TransformedMarketData = Record<string, unknown>;
 
 /** A 2D matrix suitable for grid displays or exports */
-export type MarketDataMatrix = any[][];
+export type MarketDataMatrix = unknown[][];
 
 export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected';
 
 export interface StreamEvent {
   topic: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
 
 export interface Asset {

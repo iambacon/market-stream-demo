@@ -50,7 +50,7 @@ export function MarketDashboard() {
         <div className="flex items-center gap-3">
           <AssetSearch onSelect={addAsset} excludeIds={watchlist} />
           
-          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-fit">
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'cards' | 'grid')} className="w-fit">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="cards" className="gap-2">
                 <LayoutGrid className="h-4 w-4" />

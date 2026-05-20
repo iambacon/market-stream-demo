@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { marketStream } from '../api/market-stream-service';
 import { getAssetHistory } from '../api/asset-service';
 import { DataTransformer } from '../lib/data-transformer';
@@ -26,7 +26,7 @@ interface HistoryPoint {
  * Ensures instantaneous data availability when switching views.
  */
 export function useMarketStream({ topic, config, historyLimit = 30 }: UseMarketStreamOptions) {
-  // 1. Initialize from Cache for immediate display
+  // 1. Initialise from Cache for immediate display
   const cached = marketStream.getCachedData(topic);
   const transformer = useMemo(() => new DataTransformer(config), [config]);
   

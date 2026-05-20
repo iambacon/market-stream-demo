@@ -9,21 +9,29 @@ const DEFAULT_ASSETS = ['BTCUSD', 'ETHUSD', 'SOLUSD', 'DOTUSD'];
  * Manages the user's selected assets with LocalStorage persistence.
  */
 export function useWatchlist() {
-  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [watchlist, setWatchlist] = useState<string[]>(() => {
+    // Return empty during SSR, hydrate in useEffect to avoid mismatch
+    return [];
+  });
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
+    const initialWatchlist = saved ? (() => {
       try {
-        setWatchlist(JSON.parse(saved));
-      } catch (e) {
-        setWatchlist(DEFAULT_ASSETS);
+        return JSON.parse(saved);
+      } catch {
+        return DEFAULT_ASSETS;
       }
-    } else {
-      setWatchlist(DEFAULT_ASSETS);
-    }
-    setIsLoaded(true);
+    })() : DEFAULT_ASSETS;
+
+    // Defer the update to avoid synchronous cascading render warning
+    const timer = setTimeout(() => {
+      setWatchlist(initialWatchlist);
+      setIsLoaded(true);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

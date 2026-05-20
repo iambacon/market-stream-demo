@@ -1,7 +1,7 @@
 ---
 name: Market Stream Demo
-description: A high-frequency trading dashboard that prioritizes clarity and calm.
-colors:
+description: A high-frequency trading dashboard that prioritises clarity and calm.
+colours:
   primary: "#191c1d"
   primary-foreground: "#fcfcfc"
   neutral-bg: "#ffffff"
@@ -35,12 +35,12 @@ spacing:
   lg: "24px"
 components:
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.primary-foreground}"
+    backgroundColour: "{colours.primary}"
+    textColour: "{colours.primary-foreground}"
     rounded: "{rounded.md}"
     padding: "8px 12px"
   card:
-    backgroundColor: "{colors.neutral-bg}"
+    backgroundColour: "{colours.neutral-bg}"
     rounded: "{rounded.lg}"
     padding: "24px"
 ---
@@ -51,7 +51,7 @@ components:
 
 **Creative North Star: "The Calm Stream"**
 
-The Market Stream design system is built to handle the high-velocity nature of trading data without overwhelming the user. It prioritizes clarity over complexity, ensuring that even under extreme market volatility, the interface remains presentable and approachable. The aesthetic philosophy is one of **Refined Restraint**: every pixel must justify its presence, and decorative elements are stripped away to let the data lead.
+The Market Stream design system is built to handle the high-velocity nature of trading data without overwhelming the user. It prioritises clarity over complexity, ensuring that even under extreme market volatility, the interface remains presentable and approachable. The aesthetic philosophy is one of **Refined Restraint**: every pixel must justify its presence, and decorative elements are stripped away to let the data lead.
 
 This system explicitly rejects the "AI Slop" aesthetic of unnecessary blurs, neon accents, and generic tech-demo boilerplates. Instead, it leans into precise typography and a strictly limited palette.
 
@@ -60,7 +60,7 @@ This system explicitly rejects the "AI Slop" aesthetic of unnecessary blurs, neo
 - **Refined Precision**: Sharp borders and consistent spacing over soft shadows.
 - **Approachable Expertise**: A professional-grade tool that feels inviting, not intimidating.
 
-## 2. Colors
+## 2. Colours
 
 The palette is anchored in neutral, high-contrast tones to ensure that volatility markers (reds/greens) are instantly legible.
 
@@ -69,7 +69,7 @@ The palette is anchored in neutral, high-contrast tones to ensure that volatilit
 
 ### Neutral
 - **Paper White** (#ffffff / oklch(1 0 0)): The canvas for the dashboard.
-- **Inertia Gray** (#252525 / oklch(0.145 0 0)): Primary text color, providing high contrast without the harshness of pure black.
+- **Inertia Grey** (#252525 / oklch(0.145 0 0)): Primary text colour, providing high contrast without the harshness of pure black.
 - **Muted Frost** (#f7f7f7 / oklch(0.97 0 0)): Used for secondary backgrounds and inactive states.
 - **Precision Border** (#ebebeb / oklch(0.922 0 0)): Subtle separation for cards and sections.
 
@@ -95,7 +95,7 @@ The palette is anchored in neutral, high-contrast tones to ensure that volatilit
 
 ## 4. Elevation
 
-The system is **Flat and Integrated**. Depth is conveyed through tonal layering (light grays against white) and precise borders rather than shadows.
+The system is **Flat and Integrated**. Depth is conveyed through tonal layering (light greys against white) and precise borders rather than shadows.
 
 **The Flat-By-Default Rule.** Surfaces are flat at rest. Shadows are prohibited. Separation is achieved through 1px borders (#ebebeb) or subtle background shifts (#f7f7f7).
 
@@ -107,7 +107,7 @@ Components are **Refined and Restrained**, avoiding large radii or heavy animati
 - **Shape:** Rounded-lg (8px radius)
 - **Primary:** Signal Black background with Paper White text.
 - **Refined Treatment:** A subtle 1px border is used on outline variants to maintain the "Calm Stream" precision.
-- **Hover:** A gentle lightness shift; never a color change.
+- **Hover:** A gentle lightness shift; never a colour change.
 
 ### Cards / Containers
 - **Corner Style:** Rounded-lg (10px)
@@ -124,10 +124,10 @@ Components are **Refined and Restrained**, avoiding large radii or heavy animati
 ### Do:
 - **Do** use Monospace for all financial values and price streams.
 - **Do** maintain a strict 1px border for all container separation.
-- **Do** use OKLCH for any new color definitions to maintain perceptual uniformity.
+- **Do** use OKLCH for any new colour definitions to maintain perceptual uniformity.
 
 ### Don't:
 - **Don't** use box-shadows or "glassmorphism" effects.
 - **Don't** use gradients in typography or backgrounds.
-- **Don't** use border-left greater than 1px as a colored stripe on cards.
-- **Don't** look like AI Slop: avoid generic, over-stylized, or incoherent AI-generated aesthetics.
+- **Don't** use border-left greater than 1px as a coloured stripe on cards.
+- **Don't** look like AI Slop: avoid generic, over-stylised, or incoherent AI-generated aesthetics.

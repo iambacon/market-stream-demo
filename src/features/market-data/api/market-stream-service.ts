@@ -4,7 +4,7 @@ type EventCallback = (event: StreamEvent) => void;
 type StatusCallback = (status: ConnectionStatus) => void;
 
 interface CachedData {
-  latest: Record<string, any> | null;
+  latest: Record<string, unknown> | null;
   history: { value: number; timestamp: string }[];
 }
 
@@ -84,7 +84,7 @@ export class MarketStreamService {
     }
   }
 
-  private updateCache(symbol: string, data: any) {
+  private updateCache(symbol: string, data: Record<string, unknown>) {
     const existing = this.dataCache.get(symbol) || { latest: null, history: [] };
     const newPoint = { value: Number(data.p), timestamp: new Date().toISOString() };
     

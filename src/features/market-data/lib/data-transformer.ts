@@ -34,7 +34,7 @@ export class DataTransformer {
    * Transforms a raw SignalR-style object into a human-readable object.
    * Example: { g: 1.23, a: 1.24 } -> { bid: 1.23, ask: 1.24 }
    */
-  public transform(rawData: Record<string, any>): TransformedMarketData {
+  public transform(rawData: Record<string, unknown>): TransformedMarketData {
     const transformed: TransformedMarketData = {};
 
     for (const [key, value] of Object.entries(rawData)) {
@@ -61,7 +61,7 @@ export class DataTransformer {
    * Handles "jagged" data by ensuring every row has the same length 
    * based on the provided mappings.
    */
-  public toMatrix(data: Record<string, any>[]): MarketDataMatrix {
+  public toMatrix(data: Record<string, unknown>[]): MarketDataMatrix {
     const headers = this.config.mappings.map((m) => m.label);
     const rows = data.map((item) => {
       const transformed = this.transform(item);

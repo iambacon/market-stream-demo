@@ -17,7 +17,7 @@ interface MarketCardProps {
 
 export function MarketCard({ symbol, config, onRemove }: MarketCardProps) {
   const { data, history, status, isConnected } = useMarketStream({ topic: symbol, config });
-  const [priceColor, setPriceColor] = useState<'text-foreground' | 'text-success' | 'text-destructive'>('text-foreground');
+  const [priceColour, setPriceColour] = useState<'text-foreground' | 'text-success' | 'text-destructive'>('text-foreground');
   const prevPrice = useRef<number | null>(null);
 
   useEffect(() => {
@@ -25,19 +25,19 @@ export function MarketCard({ symbol, config, onRemove }: MarketCardProps) {
       const currentPrice = Number(data.bid);
       if (prevPrice.current !== null) {
         if (currentPrice > prevPrice.current) {
-          setPriceColor('text-success');
+          setPriceColour('text-success');
         } else if (currentPrice < prevPrice.current) {
-          setPriceColor('text-destructive');
+          setPriceColour('text-destructive');
         }
       }
       prevPrice.current = currentPrice;
 
-      const timer = setTimeout(() => setPriceColor('text-foreground'), 1500);
+      const timer = setTimeout(() => setPriceColour('text-foreground'), 1500);
       return () => clearTimeout(timer);
     }
   }, [data?.bid]);
 
-  const chartColor = history.length > 2 && history[history.length - 1].value >= history[0].value 
+  const chartColour = history.length > 2 && history[history.length - 1].value >= history[0].value 
     ? '#10b981' 
     : '#bd1b1b';
 
@@ -69,14 +69,14 @@ export function MarketCard({ symbol, config, onRemove }: MarketCardProps) {
         {data ? (
           <>
             <div className="space-y-1">
-              <div className={cn("text-2xl font-mono font-bold tracking-tight transition-colors duration-500", priceColor)}>
+              <div className={cn("text-2xl font-mono font-bold tracking-tight transition-colors duration-500", priceColour)}>
                 ${Number(data.bid).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
               <p className="text-[10px] font-mono text-muted-foreground/80 tabular-nums">
-                VOL {data.volume} &bull; {new Date(data.timestamp).toLocaleTimeString()}
+                VOL {String(data.volume)} &bull; {new Date(data.timestamp as string).toLocaleTimeString()}
               </p>
             </div>
-            <PriceChart data={history} color={chartColor} />
+            <PriceChart data={history} colour={chartColour} />
           </>
         ) : (
           <div className="animate-pulse space-y-4">

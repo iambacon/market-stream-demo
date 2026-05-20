@@ -4,16 +4,16 @@ import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
 
 interface PriceChartProps {
   data: { value: number; timestamp: string }[];
-  color?: string;
+  colour?: string;
 }
 
 /**
  * PriceChart
  * 
- * A high-density sparkline component for visualizing price trends.
+ * A high-density sparkline component for visualising price trends.
  * Strips away all non-essential elements to focus on the data movement.
  */
-export function PriceChart({ data, color = '#3b82f6' }: PriceChartProps) {
+export function PriceChart({ data, colour = '#3b82f6' }: PriceChartProps) {
   if (data.length < 2) {
     return <div className="h-[40px] w-full bg-muted/20 animate-pulse rounded" />;
   }
@@ -32,7 +32,7 @@ export function PriceChart({ data, color = '#3b82f6' }: PriceChartProps) {
           <Line
             type="monotone"
             dataKey="value"
-            stroke={color}
+            stroke={colour}
             strokeWidth={1.5}
             dot={false}
             isAnimationActive={false}

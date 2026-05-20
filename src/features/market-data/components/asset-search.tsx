@@ -1,8 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronsUpDown, Plus, Search } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ChevronsUpDown, Plus, Search } from 'lucide-react';
 import {
   Command,
   CommandEmpty,
@@ -27,14 +26,11 @@ interface AssetSearchProps {
 export function AssetSearch({ onSelect, excludeIds = [] }: AssetSearchProps) {
   const [open, setOpen] = React.useState(false);
   const [assets, setAssets] = React.useState<Asset[]>([]);
-  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     async function loadAssets() {
-      setLoading(true);
       const data = await getTopAssets();
       setAssets(data);
-      setLoading(false);
     }
     loadAssets();
   }, []);
