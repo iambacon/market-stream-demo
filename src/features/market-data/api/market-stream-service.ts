@@ -1,4 +1,4 @@
-import { ConnectionStatus, StreamEvent } from '../types';
+import { ConnectionStatus, StreamEvent } from "../types";
 
 type EventCallback = (event: StreamEvent) => void;
 type StatusCallback = (status: ConnectionStatus) => void;
@@ -10,52 +10,59 @@ interface CachedData {
 
 /**
  * MarketStreamService (Bitfinex Implementation with Shared Cache)
- * 
- * Now includes a persistent cache to ensure that data survives 
+ *
+ * Now includes a persistent cache to ensure that data survives
  * component unmounting (e.g., when switching between Grid and Cards).
  */
 export class MarketStreamService {
   private socket: WebSocket | null = null;
-  private status: ConnectionStatus = 'disconnected';
+  private status: ConnectionStatus = "disconnected";
   private subscribers: Map<string, Set<EventCallback>> = new Map();
   private statusListeners: Set<StatusCallback> = new Set();
   private channelMap: Map<number, string> = new Map();
-  
+
   // SHARED CACHE: The source of truth for all components
   private dataCache: Map<string, CachedData> = new Map();
-  
-  private readonly WSS_URL = 'wss://api-pub.bitfinex.com/ws/2';
+
+  private readonly WSS_URL = "wss://api-pub.bitfinex.com/ws/2";
 
   public connect(): void {
-    if (this.socket || this.status === 'connected' || this.status === 'connecting') return;
+    if (
+      this.socket ||
+      this.status === "connected" ||
+      this.status === "connecting"
+    )
+      return;
 
     try {
-      this.updateStatus('connecting');
+      this.updateStatus("connecting");
       this.socket = new WebSocket(this.WSS_URL);
 
       this.socket.onopen = () => {
-        this.updateStatus('connected');
-        this.subscribers.forEach((_, symbol) => this.sendSubscribeMessage(symbol));
+        this.updateStatus("connected");
+        this.subscribers.forEach((_, symbol) =>
+          this.sendSubscribeMessage(symbol),
+        );
       };
 
       this.socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
-        if (data.event === 'subscribed') {
+        if (data.event === "subscribed") {
           this.channelMap.set(data.chanId, data.symbol);
           return;
         }
 
-        if (!Array.isArray(data) || data[1] === 'hb') return;
+        if (!Array.isArray(data) || data[1] === "hb") return;
 
         const [chanId, tickerData] = data;
         const symbol = this.channelMap.get(chanId);
 
         if (symbol && Array.isArray(tickerData)) {
-          const rawData = { 
-            p: tickerData[0],
-            a: tickerData[2],
-            v: tickerData[7],
+          const rawData = {
+            bid: tickerData[0],
+            ask: tickerData[2],
+            volume: tickerData[7],
           };
 
           // Update Cache
@@ -63,42 +70,53 @@ export class MarketStreamService {
 
           const callbacks = this.subscribers.get(symbol);
           if (callbacks) {
-            callbacks.forEach(cb => cb({ topic: symbol, data: rawData }));
+            callbacks.forEach((cb) => cb({ topic: symbol, data: rawData }));
           }
         }
       };
 
       this.socket.onclose = () => {
-        this.updateStatus('disconnected');
+        this.updateStatus("disconnected");
         this.socket = null;
         this.channelMap.clear();
       };
 
       this.socket.onerror = (err) => {
-        console.error('MarketStreamService: WebSocket error', err);
+        console.error("MarketStreamService: WebSocket error", err);
       };
-
     } catch (error) {
-      console.error('MarketStreamService: Connection failed', error);
-      this.updateStatus('disconnected');
+      console.error("MarketStreamService: Connection failed", error);
+      this.updateStatus("disconnected");
     }
   }
 
   private updateCache(symbol: string, data: Record<string, unknown>) {
-    const existing = this.dataCache.get(symbol) || { latest: null, history: [] };
-    const newPoint = { value: Number(data.p), timestamp: new Date().toISOString() };
-    
+    const existing = this.dataCache.get(symbol) || {
+      latest: null,
+      history: [],
+    };
+    const newPoint = {
+      value: Number(data.bid),
+      timestamp: new Date().toISOString(),
+    };
+
     this.dataCache.set(symbol, {
       latest: data,
-      history: [...existing.history, newPoint].slice(-50) // Store last 50 points
+      history: [...existing.history, newPoint].slice(-50), // Store last 50 points
     });
   }
 
   /**
    * Seed history from external source (e.g. REST API)
    */
-  public setCachedHistory(symbol: string, history: { value: number; timestamp: string }[]) {
-    const existing = this.dataCache.get(symbol) || { latest: null, history: [] };
+  public setCachedHistory(
+    symbol: string,
+    history: { value: number; timestamp: string }[],
+  ) {
+    const existing = this.dataCache.get(symbol) || {
+      latest: null,
+      history: [],
+    };
     // Only seed if we don't already have history
     if (existing.history.length === 0) {
       this.dataCache.set(symbol, { ...existing, history });
@@ -116,11 +134,13 @@ export class MarketStreamService {
 
   private sendSubscribeMessage(symbol: string): void {
     if (this.socket?.readyState === WebSocket.OPEN) {
-      this.socket.send(JSON.stringify({
-        event: 'subscribe',
-        channel: 'ticker',
-        symbol: symbol.startsWith('t') ? symbol : `t${symbol}`
-      }));
+      this.socket.send(
+        JSON.stringify({
+          event: "subscribe",
+          channel: "ticker",
+          symbol: symbol.startsWith("t") ? symbol : `t${symbol}`,
+        }),
+      );
     }
   }
 
@@ -132,13 +152,13 @@ export class MarketStreamService {
   }
 
   public subscribe(topic: string, callback: EventCallback): () => void {
-    const bitfinexSymbol = topic.startsWith('t') ? topic : `t${topic}`;
-    
+    const bitfinexSymbol = topic.startsWith("t") ? topic : `t${topic}`;
+
     if (!this.subscribers.has(bitfinexSymbol)) {
       this.subscribers.set(bitfinexSymbol, new Set());
       this.sendSubscribeMessage(bitfinexSymbol);
     }
-    
+
     this.subscribers.get(bitfinexSymbol)?.add(callback);
 
     return () => {
@@ -158,7 +178,7 @@ export class MarketStreamService {
 
   private updateStatus(newStatus: ConnectionStatus): void {
     this.status = newStatus;
-    this.statusListeners.forEach(cb => cb(newStatus));
+    this.statusListeners.forEach((cb) => cb(newStatus));
   }
 }
 
