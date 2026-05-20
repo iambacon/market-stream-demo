@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-20T10:00:00Z",
+  "title": "Design System: Market Stream Demo",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Signal Black",
+        "canonical": "oklch(0.205 0 0)",
+        "tonalRamp": ["oklch(0.1 0 0)", "oklch(0.2 0 0)", "oklch(0.3 0 0)", "oklch(0.4 0 0)", "oklch(0.5 0 0)", "oklch(0.7 0 0)", "oklch(0.85 0 0)", "oklch(0.95 0 0)"]
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.3 0 0)", "oklch(0.45 0 0)", "oklch(0.6 0 0)", "oklch(0.75 0 0)", "oklch(0.85 0 0)", "oklch(0.95 0 0)", "oklch(1 0 0)"]
+      },
+      "destructive": {
+        "role": "destructive",
+        "displayName": "Alert Crimson",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": ["oklch(0.2 0.1 27)", "oklch(0.3 0.15 27)", "oklch(0.4 0.2 27)", "oklch(0.5 0.24 27)", "oklch(0.6 0.2 27)", "oklch(0.7 0.15 27)", "oklch(0.8 0.1 27)", "oklch(0.9 0.05 27)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Primary market indicators and large labels." },
+      "body": { "displayName": "Body", "purpose": "Standard descriptions and secondary data." },
+      "mono": { "displayName": "Mono", "purpose": "Price values and timestamps." }
+    },
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main call to action.",
+      "html": "<button class=\"ds-btn-primary\">Trade Now</button>",
+      "css": ".ds-btn-primary { background: #191c1d; color: #fcfcfc; padding: 8px 12px; font-size: 0.875rem; font-weight: 500; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s; } .ds-btn-primary:hover { background: oklch(0.3 0 0); }"
+    },
+    {
+      "name": "Dashboard Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Container for charts and data grids.",
+      "html": "<div class=\"ds-card\"><h3>Market Summary</h3><p>Price movements in the last 24h.</p></div>",
+      "css": ".ds-card { background: #ffffff; border: 1px solid #ebebeb; border-radius: 10px; padding: 24px; } .ds-card h3 { margin: 0 0 8px; font-size: 1.125rem; font-weight: 600; color: #191c1d; } .ds-card p { margin: 0; font-size: 0.875rem; color: #252525; opacity: 0.8; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calm Stream",
+    "overview": "The Market Stream design system is built to handle the high-velocity nature of trading data without overwhelming the user. It prioritizes clarity over complexity, ensuring that even under extreme market volatility, the interface remains presentable and approachable.",
+    "keyCharacteristics": ["Clarity over Chaos", "Refined Precision", "Approachable Expertise"],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "The primary accent is used on ≤10% of any given screen. Its rarity is the point.", "section": "colors" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Shadows are prohibited. Separation is achieved through 1px borders or subtle background shifts.", "section": "elevation" }
+    ],
+    "dos": ["Do use Monospace for all financial values and price streams.", "Do maintain a strict 1px border for all container separation."],
+    "donts": ["Don't use box-shadows or 'glassmorphism' effects.", "Don't look like AI Slop."]
+  }
+}
