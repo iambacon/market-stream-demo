@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/features/shared/ui/card';
-import { Badge } from '@/features/shared/ui/badge';
 import { PriceChart } from './price-chart';
 import { useMarketStream } from '../hooks/use-market-stream';
 import { TransformerConfig } from '../types';
@@ -46,9 +45,14 @@ export function MarketCard({ symbol, config, onRemove }: MarketCardProps) {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <CardTitle className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{symbol}</CardTitle>
         <div className="flex items-center gap-2">
-          <Badge variant={isConnected ? "outline" : "secondary"} className="text-[9px] font-bold tracking-tight px-1.5 py-0">
+          <span className={cn(
+            "text-[10px] font-bold tracking-tight px-1.5 py-0.5 rounded border leading-none",
+            isConnected 
+              ? "border-border text-foreground" 
+              : "bg-muted text-muted-foreground border-transparent"
+          )}>
             {status.toUpperCase()}
-          </Badge>
+          </span>
           {onRemove && (
             <button 
               type="button"
