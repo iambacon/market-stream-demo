@@ -41,12 +41,12 @@ export function MarketCard({ symbol, config, onRemove }: MarketCardProps) {
     : '#bd1b1b';
 
   return (
-    <Card className="w-full group relative overflow-hidden border-border/60 bg-card/30">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+    <Card className="w-full group relative border-border/60 bg-card/30">
+      <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardTitle className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{symbol}</CardTitle>
         <div className="flex items-center gap-2">
           <span className={cn(
-            "text-[10px] font-bold tracking-tight px-1.5 py-0.5 rounded border leading-none",
+            "text-[10px] font-bold px-1.5 py-0.5 rounded border",
             isConnected 
               ? "border-border text-foreground" 
               : "bg-muted text-muted-foreground border-transparent"
@@ -61,7 +61,7 @@ export function MarketCard({ symbol, config, onRemove }: MarketCardProps) {
                 e.stopPropagation();
                 onRemove();
               }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2 h-6 w-6 z-10 flex items-center justify-center rounded-md hover:bg-muted"
+              className="opacity-0 group-hover:opacity-100 absolute top-2 right-2 h-6 w-6 flex items-center justify-center rounded hover:bg-muted transition-opacity"
               aria-label="Remove asset"
             >
               <X className="h-3 w-3 text-muted-foreground hover:text-destructive" />

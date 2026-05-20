@@ -6,17 +6,12 @@ import { cn } from "@/lib/utils";
 
 function Tabs({
   className,
-  orientation = "horizontal",
   ...props
 }: TabsPrimitive.Root.Props) {
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
-      data-orientation={orientation}
-      className={cn(
-        "group/tabs flex gap-2 data-horizontal:flex-col",
-        className,
-      )}
+      className={cn("flex flex-col gap-4", className)}
       {...props}
     />
   );
@@ -29,7 +24,7 @@ function TabsList({
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("group/tabs-list inline-flex w-fit items-center justify-center rounded-lg p-[3px] bg-muted text-muted-foreground group-data-horizontal/tabs:h-8 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col", className)}
+      className={cn("inline-flex items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground", className)}
       {...props}
     />
   );
@@ -40,7 +35,7 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
       className={cn(
-        "relative inline-flex h-full flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-1.5 py-0.5 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-active:bg-background data-active:text-foreground",
+        "inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium transition-all hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-active:bg-background data-active:text-foreground shadow-sm",
         className,
       )}
       {...props}

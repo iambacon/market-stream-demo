@@ -40,20 +40,20 @@ export function AssetSearch({ onSelect, excludeIds = [] }: AssetSearchProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        className="flex h-9 w-[250px] items-center justify-between rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-3 focus:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer hover:bg-muted/50 transition-colors"
+        className="flex h-9 w-[240px] items-center justify-between rounded-lg border border-input bg-background px-3 text-sm hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring/50"
       >
         <div className="flex items-center gap-2">
-          <Search className="h-3.5 w-3.5 shrink-0 opacity-50" />
+          <Search className="h-4 w-4 opacity-50" />
           <span className="text-muted-foreground">Add asset...</span>
         </div>
-        <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+        <ChevronsUpDown className="h-4 w-4 opacity-50" />
       </PopoverTrigger>
-      <PopoverContent className="w-[250px] p-0" align="start">
+      <PopoverContent className="w-[240px] p-0" align="start">
         <Command>
-          <CommandInput placeholder="Search symbols (e.g. bitcoin)" className="text-sm" />
+          <CommandInput placeholder="Search symbols..." />
           <CommandList>
-            <CommandEmpty className="text-xs py-6 text-center text-muted-foreground">No asset found.</CommandEmpty>
-            <CommandGroup heading="Available Assets">
+            <CommandEmpty>No asset found.</CommandEmpty>
+            <CommandGroup>
               {filteredAssets.map((asset) => (
                 <CommandItem
                   key={asset.id}
@@ -62,12 +62,11 @@ export function AssetSearch({ onSelect, excludeIds = [] }: AssetSearchProps) {
                     onSelect(currentValue);
                     setOpen(false);
                   }}
-                  className="aria-selected:bg-muted/60"
                 >
-                  <Plus className="mr-2 h-3 w-3 text-muted-foreground" />
-                  <div className="flex flex-col gap-0.5">
-                    <span className="font-mono font-bold leading-none">{asset.symbol}</span>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80">{asset.name}</span>
+                  <Plus className="h-3.5 w-3.5 text-muted-foreground" />
+                  <div className="flex flex-col">
+                    <span className="font-mono font-bold">{asset.symbol}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase">{asset.name}</span>
                   </div>
                 </CommandItem>
               ))}

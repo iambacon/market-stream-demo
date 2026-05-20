@@ -54,11 +54,11 @@ export function MarketDashboard() {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="cards" className="gap-2">
                 <LayoutGrid className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs uppercase tracking-wider font-semibold">Cards</span>
+                <span className="hidden sm:inline text-xs uppercase font-medium">Cards</span>
               </TabsTrigger>
               <TabsTrigger value="grid" className="gap-2">
                 <List className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs uppercase tracking-wider font-semibold">Grid</span>
+                <span className="hidden sm:inline text-xs uppercase font-medium">Grid</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
