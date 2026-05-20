@@ -37,12 +37,12 @@ export function MarketGrid({ symbols, config }: MarketGridProps) {
   }
 
   return (
-    <div className="rounded-xl border bg-card overflow-hidden shadow-sm">
+    <div className="rounded-xl border border-border/60 overflow-hidden bg-background">
       <Table>
-        <TableHeader className="bg-muted/50">
-          <TableRow className="hover:bg-transparent border-b">
+        <TableHeader className="bg-muted/30">
+          <TableRow className="hover:bg-transparent border-b border-border/60">
             {headers.map((header, i) => (
-              <TableHead key={i} className="h-10 font-bold uppercase text-[10px] tracking-widest text-muted-foreground">
+              <TableHead key={i} className="h-10 font-bold uppercase text-[10px] tracking-widest text-muted-foreground/80">
                 {header}
               </TableHead>
             ))}

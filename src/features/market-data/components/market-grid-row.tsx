@@ -20,7 +20,7 @@ interface MarketGridRowProps {
  */
 export function MarketGridRow({ symbol, config }: MarketGridRowProps) {
   const { data } = useMarketStream({ topic: symbol, config });
-  const [flash, setFlash] = useState<'bg-green-500/10' | 'bg-red-500/10' | null>(null);
+  const [flash, setFlash] = useState<'bg-success/5' | 'bg-destructive/5' | null>(null);
   const prevPrice = useRef<number | null>(null);
 
   // High-performance visual feedback for the grid
@@ -28,11 +28,11 @@ export function MarketGridRow({ symbol, config }: MarketGridRowProps) {
     if (data?.bid) {
       const currentPrice = Number(data.bid);
       if (prevPrice.current !== null) {
-        if (currentPrice > prevPrice.current) setFlash('bg-green-500/10');
-        else if (currentPrice < prevPrice.current) setFlash('bg-red-500/10');
+        if (currentPrice > prevPrice.current) setFlash('bg-success/5');
+        else if (currentPrice < prevPrice.current) setFlash('bg-destructive/5');
       }
       prevPrice.current = currentPrice;
-      const timer = setTimeout(() => setFlash(null), 500);
+      const timer = setTimeout(() => setFlash(null), 800);
       return () => clearTimeout(timer);
     }
   }, [data?.bid]);

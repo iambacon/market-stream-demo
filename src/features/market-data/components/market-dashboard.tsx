@@ -38,44 +38,44 @@ export function MarketDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold tracking-tight">Live Trading Dashboard</h2>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-1">
+          <h2 className="text-3xl font-semibold tracking-tight">Trading Dashboard</h2>
           <p className="text-muted-foreground text-sm">
-            Real-time institutional price streams via Bitfinex WebSocket API.
+            Real-time institutional price streams.
           </p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <AssetSearch onSelect={addAsset} excludeIds={watchlist} />
           
           <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-fit">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="cards" className="gap-2">
                 <LayoutGrid className="h-4 w-4" />
-                <span className="hidden sm:inline">Cards</span>
+                <span className="hidden sm:inline text-xs uppercase tracking-wider font-semibold">Cards</span>
               </TabsTrigger>
               <TabsTrigger value="grid" className="gap-2">
                 <List className="h-4 w-4" />
-                <span className="hidden sm:inline">Grid</span>
+                <span className="hidden sm:inline text-xs uppercase tracking-wider font-semibold">Grid</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
       </div>
       
-      <Separator />
+      <Separator className="bg-border/60" />
       
       {watchlist.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 border-2 border-dashed rounded-xl">
-          <p className="text-muted-foreground">Your watchlist is empty.</p>
-          <p className="text-sm text-muted-foreground">Use the search box above to add trading pairs.</p>
+        <div className="flex flex-col items-center justify-center py-32 border border-dashed rounded-xl bg-muted/5">
+          <p className="text-muted-foreground font-medium">Your watchlist is empty.</p>
+          <p className="text-sm text-muted-foreground/60">Use the search box above to add trading pairs.</p>
         </div>
       ) : (
-        <>
+        <div className="min-h-[400px]">
           {viewMode === 'cards' ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {watchlist.map((symbol) => (
                 <MarketCard 
                   key={symbol} 
@@ -91,18 +91,8 @@ export function MarketDashboard() {
               config={MARKET_CONFIG} 
             />
           )}
-        </>
+        </div>
       )}
-
-      <div className="rounded-xl border bg-card p-4 text-card-foreground shadow">
-        <h3 className="text-sm font-semibold mb-2">Architectural Highlight: Atomic Rendering</h3>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          This dashboard implements <strong>Atomic Rendering</strong> combined with the <strong>React Compiler</strong>. 
-          Each card and grid row manages its own data subscription. This ensures that a price 
-          update for one asset only re-renders that specific component, preventing expensive 
-          global re-renders and maintaining a smooth 60fps UI even under high-frequency load.
-        </p>
-      </div>
     </div>
   );
 }
