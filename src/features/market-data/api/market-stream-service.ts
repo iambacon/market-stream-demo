@@ -1,28 +1,33 @@
-/**
- * MarketStreamService (Bitfinex Implementation)
- * 
- * A professional message-based WebSocket client. 
- * Handles dynamic subscriptions, channel mapping, and positional array parsing.
- */
-
 import { ConnectionStatus, StreamEvent } from '../types';
 
 type EventCallback = (event: StreamEvent) => void;
 type StatusCallback = (status: ConnectionStatus) => void;
 
+interface CachedData {
+  latest: Record<string, any> | null;
+  history: { value: number; timestamp: string }[];
+}
+
+/**
+ * MarketStreamService (Bitfinex Implementation with Shared Cache)
+ * 
+ * Now includes a persistent cache to ensure that data survives 
+ * component unmounting (e.g., when switching between Grid and Cards).
+ */
 export class MarketStreamService {
   private socket: WebSocket | null = null;
   private status: ConnectionStatus = 'disconnected';
   private subscribers: Map<string, Set<EventCallback>> = new Map();
   private statusListeners: Set<StatusCallback> = new Set();
-  
-  // Maps Bitfinex chanId to Symbol (e.g., 12345 -> 'BTCUSD')
   private channelMap: Map<number, string> = new Map();
+  
+  // SHARED CACHE: The source of truth for all components
+  private dataCache: Map<string, CachedData> = new Map();
   
   private readonly WSS_URL = 'wss://api-pub.bitfinex.com/ws/2';
 
   public connect(): void {
-    if (this.socket || this.status === 'connected') return;
+    if (this.socket || this.status === 'connected' || this.status === 'connecting') return;
 
     try {
       this.updateStatus('connecting');
@@ -30,39 +35,35 @@ export class MarketStreamService {
 
       this.socket.onopen = () => {
         this.updateStatus('connected');
-        // Resubscribe to existing topics on reconnection
         this.subscribers.forEach((_, symbol) => this.sendSubscribeMessage(symbol));
       };
 
       this.socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
-        // 1. Handle Control Messages (Handshake/Subscription)
         if (data.event === 'subscribed') {
           this.channelMap.set(data.chanId, data.symbol);
-          console.log("MarketStreamService: Subscribed to", data.symbol);
           return;
         }
 
-        // 2. Handle Heartbeats & Snapshots (Ignore for now)
         if (!Array.isArray(data) || data[1] === 'hb') return;
 
-        // 3. Handle Ticker Updates
-        // Bitfinex Ticker format: [chanId, [BID, BID_SIZE, ASK, ASK_SIZE, DAILY_CHG, ...]]
         const [chanId, tickerData] = data;
         const symbol = this.channelMap.get(chanId);
 
         if (symbol && Array.isArray(tickerData)) {
+          const rawData = { 
+            p: tickerData[0],
+            a: tickerData[2],
+            v: tickerData[7],
+          };
+
+          // Update Cache
+          this.updateCache(symbol, rawData);
+
           const callbacks = this.subscribers.get(symbol);
           if (callbacks) {
-            callbacks.forEach(cb => cb({ 
-              topic: symbol, 
-              data: { 
-                p: tickerData[0], // Using BID as the primary price point
-                a: tickerData[2], // ASK
-                v: tickerData[7], // VOLUME
-              } 
-            }));
+            callbacks.forEach(cb => cb({ topic: symbol, data: rawData }));
           }
         }
       };
@@ -83,6 +84,36 @@ export class MarketStreamService {
     }
   }
 
+  private updateCache(symbol: string, data: any) {
+    const existing = this.dataCache.get(symbol) || { latest: null, history: [] };
+    const newPoint = { value: Number(data.p), timestamp: new Date().toISOString() };
+    
+    this.dataCache.set(symbol, {
+      latest: data,
+      history: [...existing.history, newPoint].slice(-50) // Store last 50 points
+    });
+  }
+
+  /**
+   * Seed history from external source (e.g. REST API)
+   */
+  public setCachedHistory(symbol: string, history: { value: number; timestamp: string }[]) {
+    const existing = this.dataCache.get(symbol) || { latest: null, history: [] };
+    // Only seed if we don't already have history
+    if (existing.history.length === 0) {
+      this.dataCache.set(symbol, { ...existing, history });
+    }
+  }
+
+  public getCachedData(symbol: string): CachedData {
+    // Return a copy to prevent direct mutation
+    return this.dataCache.get(symbol) || { latest: null, history: [] };
+  }
+
+  public getStatus(): ConnectionStatus {
+    return this.status;
+  }
+
   private sendSubscribeMessage(symbol: string): void {
     if (this.socket?.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify({
@@ -101,7 +132,6 @@ export class MarketStreamService {
   }
 
   public subscribe(topic: string, callback: EventCallback): () => void {
-    // Bitfinex expects symbols like tBTCUSD
     const bitfinexSymbol = topic.startsWith('t') ? topic : `t${topic}`;
     
     if (!this.subscribers.has(bitfinexSymbol)) {
@@ -116,7 +146,7 @@ export class MarketStreamService {
       topicSubscribers?.delete(callback);
       if (topicSubscribers?.size === 0) {
         this.subscribers.delete(bitfinexSymbol);
-        // Bitfinex unsubscribe could be added here for completeness
+        // We keep the cache even after unsubscribe for quick re-mounting
       }
     };
   }

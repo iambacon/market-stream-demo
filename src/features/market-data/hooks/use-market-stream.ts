@@ -22,28 +22,31 @@ interface HistoryPoint {
 /**
  * useMarketStream
  * 
- * Orchestrates a REST snapshot (history) and a WebSocket stream (live).
- * Ensures the UI is pre-populated with data on mount.
+ * Refactored to use the MarketStreamService's shared cache.
+ * Ensures instantaneous data availability when switching views.
  */
 export function useMarketStream({ topic, config, historyLimit = 30 }: UseMarketStreamOptions) {
-  const [data, setData] = useState<TransformedMarketData | null>(null);
-  const [history, setHistory] = useState<HistoryPoint[]>([]);
-  const [status, setStatus] = useState<ConnectionStatus>('disconnected');
-  
-  const historyLoadedRef = useRef(false);
+  // 1. Initialize from Cache for immediate display
+  const cached = marketStream.getCachedData(topic);
   const transformer = useMemo(() => new DataTransformer(config), [config]);
+  
+  const initialData = cached.latest ? transformer.transform(cached.latest) : null;
+  const [data, setData] = useState<TransformedMarketData | null>(initialData);
+  const [history, setHistory] = useState<HistoryPoint[]>(cached.history.slice(-historyLimit));
+  const [status, setStatus] = useState<ConnectionStatus>(marketStream.getStatus());
 
   useEffect(() => {
-    // 1. Initial Snapshot Fetch
+    // 2. Fetch history only if the cache is empty
     async function loadHistory() {
-      const snapshot = await getAssetHistory(topic, historyLimit);
-      setHistory(snapshot);
-      historyLoadedRef.current = true;
+      if (cached.history.length === 0) {
+        const snapshot = await getAssetHistory(topic, historyLimit);
+        marketStream.setCachedHistory(topic, snapshot);
+        setHistory(snapshot);
+      }
     }
     
     loadHistory();
 
-    // 2. WebSocket Subscription
     const unsubStatus = marketStream.onStatusChange((newStatus) => {
       setStatus(newStatus);
     });
@@ -51,29 +54,20 @@ export function useMarketStream({ topic, config, historyLimit = 30 }: UseMarketS
     marketStream.connect();
 
     const unsubTopic = marketStream.subscribe(topic, (event) => {
+      // The service already updated the cache, we just update local state
       const transformed = transformer.transform(event.data);
       setData(transformed);
       
-      if (transformed.bid) {
-        setHistory((prev) => {
-          const newPoint = { 
-            value: Number(transformed.bid), 
-            timestamp: transformed.timestamp || new Date().toISOString() 
-          };
-          
-          // Append new point and maintain limit
-          const next = [...prev, newPoint];
-          return next.slice(-historyLimit);
-        });
-      }
+      // Sync local history with the service's updated cache
+      const updatedCache = marketStream.getCachedData(topic);
+      setHistory(updatedCache.history.slice(-historyLimit));
     });
 
     return () => {
       unsubStatus();
       unsubTopic();
-      historyLoadedRef.current = false;
     };
-  }, [topic, transformer, historyLimit]);
+  }, [topic, transformer, historyLimit, cached.history.length]);
 
   return {
     data,
