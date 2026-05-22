@@ -9,12 +9,6 @@ interface MarketGridRowProps {
   symbol: string;
 }
 
-/**
- * MarketGridRow
- *
- * An atomised row component that subscribes to its own data stream.
- * Ensures that price updates only trigger a re-render of this specific row.
- */
 export function MarketGridRow({ symbol }: MarketGridRowProps) {
   const { data, hasError } = useMarketStream({ topic: symbol });
   const [flash, setFlash] = useState<
@@ -22,7 +16,6 @@ export function MarketGridRow({ symbol }: MarketGridRowProps) {
   >(null);
   const prevPrice = useRef<number | null>(null);
 
-  // High-performance visual feedback for the grid
   useEffect(() => {
     if (data?.bid) {
       const currentPrice = Number(data.bid);

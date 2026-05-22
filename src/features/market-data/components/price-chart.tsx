@@ -7,18 +7,11 @@ interface PriceChartProps {
   colour?: string;
 }
 
-/**
- * PriceChart
- * 
- * A high-density sparkline component for visualising price trends.
- * Strips away all non-essential elements to focus on the data movement.
- */
 export function PriceChart({ data, colour = '#3b82f6' }: PriceChartProps) {
   if (data.length < 2) {
     return <div className="h-[40px] w-full bg-muted/20 animate-pulse rounded" />;
   }
 
-  // Calculate a small buffer for the Y-axis so the line doesn't hit the edges
   const values = data.map(d => d.value);
   const min = Math.min(...values);
   const max = Math.max(...values);

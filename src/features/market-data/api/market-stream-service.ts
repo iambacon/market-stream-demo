@@ -8,12 +8,6 @@ interface CachedData {
   history: { value: number; timestamp: string }[];
 }
 
-/**
- * MarketStreamService (Bitfinex Implementation with Shared Cache & Resilience)
- *
- * Provides institutional-grade connectivity with automatic reconnection,
- * shared data caching, and heartbeat monitoring.
- */
 export class MarketStreamService {
   private socket: WebSocket | null = null;
   private status: ConnectionStatus = "disconnected";
@@ -21,7 +15,6 @@ export class MarketStreamService {
   private statusListeners: Set<StatusCallback> = new Set();
   private channelMap: Map<number, string> = new Map();
   
-  // Resilience state
   private reconnectAttempt = 0;
   private reconnectTimer: NodeJS.Timeout | null = null;
   private heartbeatTimer: NodeJS.Timeout | null = null;
@@ -31,7 +24,6 @@ export class MarketStreamService {
   private readonly HEARTBEAT_INTERVAL = 5000;
   private readonly STALE_THRESHOLD = 15000;
 
-  // SHARED CACHE: The source of truth for all components
   private dataCache: Map<string, CachedData> = new Map();
 
   private readonly WSS_URL = "wss://api-pub.bitfinex.com/ws/2";
@@ -51,7 +43,6 @@ export class MarketStreamService {
         this.lastMessageTime = Date.now();
         this.startHeartbeat();
         
-        // Re-subscribe to all active topics
         this.subscribers.forEach((_, symbol) => this.sendSubscribeMessage(symbol));
       };
 
@@ -64,7 +55,6 @@ export class MarketStreamService {
           return;
         }
 
-        // Bitfinex sends 'hb' as the second element for heartbeats
         if (!Array.isArray(data) || data[1] === "hb") return;
 
         const [chanId, tickerData] = data;

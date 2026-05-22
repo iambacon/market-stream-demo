@@ -1,16 +1,10 @@
 import { useState, useEffect } from 'react';
 
-const STORAGE_KEY = 'market-stream-watchlist-v2'; // Versioned key to clear old CoinCap data
+const STORAGE_KEY = 'market-stream-watchlist-v2';
 const DEFAULT_ASSETS = ['BTCUSD', 'ETHUSD', 'SOLUSD', 'DOTUSD'];
 
-/**
- * useWatchlist
- * 
- * Manages the user's selected assets with LocalStorage persistence.
- */
 export function useWatchlist() {
   const [watchlist, setWatchlist] = useState<string[]>(() => {
-    // Return empty during SSR, hydrate in useEffect to avoid mismatch
     return [];
   });
   const [isLoaded, setIsLoaded] = useState(false);
@@ -25,7 +19,6 @@ export function useWatchlist() {
       }
     })() : DEFAULT_ASSETS;
 
-    // Defer the update to avoid synchronous cascading render warning
     const timer = setTimeout(() => {
       setWatchlist(initialWatchlist);
       setIsLoaded(true);

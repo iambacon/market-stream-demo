@@ -15,14 +15,7 @@ export async function getTopAssets(): Promise<Asset[]> {
   return BITFINEX_ASSETS;
 }
 
-/**
- * getAssetHistory
- * 
- * Fetches historical snapshots via our internal server-side proxy.
- * Bypasses CORS and provides an additional layer of resilience.
- */
 export async function getAssetHistory(symbol: string, limit = 30) {
-  // Calling our internal Next.js API route
   const response = await fetch(`/api/market/history?symbol=${symbol}&limit=${limit}`);
   
   if (!response.ok) {

@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     
     const response = await fetch(url, {
       headers: { 'Accept': 'application/json' },
-      next: { revalidate: 60 } // Cache for 60 seconds
+      next: { revalidate: 60 }
     });
 
     if (!response.ok) {
@@ -30,7 +30,6 @@ export async function GET(request: Request) {
 
     const data = await response.json();
     
-    // Map Bitfinex format: [ID, MTS, AMOUNT, PRICE]
     const history = data.map((t: [number, number, number, number]) => ({
       value: t[3],
       timestamp: new Date(t[1]).toISOString(),

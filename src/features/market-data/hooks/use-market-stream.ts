@@ -13,17 +13,10 @@ interface HistoryPoint {
   timestamp: string;
 }
 
-/**
- * useMarketStream
- *
- * Refactored to use the MarketStreamService's shared cache.
- * Ensures instantaneous data availability when switching views.
- */
 export function useMarketStream({
   topic,
   historyLimit = 30,
 }: UseMarketStreamOptions) {
-  // 1. Initialise from Cache for immediate display
   const cached = marketStream.getCachedData(topic);
 
   const initialData = cached.latest
@@ -39,7 +32,6 @@ export function useMarketStream({
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    // 2. Fetch history only if the cache is empty
     async function loadHistory() {
       if (cached.history.length === 0) {
         try {
@@ -63,14 +55,12 @@ export function useMarketStream({
     marketStream.connect();
 
     const unsubTopic = marketStream.subscribe(topic, (event) => {
-      // Add a local timestamp for UI updates
       const transformed = {
         ...event.data,
         timestamp: new Date().toISOString(),
       };
       setData(transformed);
 
-      // Sync local history with the service's updated cache
       const updatedCache = marketStream.getCachedData(topic);
       setHistory(updatedCache.history.slice(-historyLimit));
     });

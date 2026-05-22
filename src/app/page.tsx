@@ -41,8 +41,7 @@ export default function Home() {
       <footer className="border-t bg-muted/10 p-10 mt-auto">
         <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Colin Bacon &bull; Senior Software
-            Engineer
+            &copy; {new Date().getFullYear()} Colin Bacon
           </p>
           <div className="flex items-center gap-6">
             <span className="text-[10px] font-medium tracking-widest text-muted-foreground/60 uppercase">

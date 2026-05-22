@@ -13,12 +13,6 @@ interface MarketGridProps {
   symbols: string[];
 }
 
-/**
- * MarketGrid
- *
- * An optimized container for a high-density table.
- * Orchestrates individual row components to achieve Atomic Rendering.
- */
 export function MarketGrid({ symbols }: MarketGridProps) {
   const headers = ["Symbol", "Bid", "Ask", "Volume"];
 
