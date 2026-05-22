@@ -1,8 +1,4 @@
 {
-  "trailingSlash": "always",
-  "navigationFallback": {
-    "rewrite": "/index.html"
-  },
   "platform": {
     "apiRuntime": "node:24"
   }
