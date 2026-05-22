@@ -1,5 +1,7 @@
 # MarketStream
 
+**[Live Demo](https://green-meadow-0c999a203.7.azurestaticapps.net/)**
+
 A high-frequency trading dashboard prototype focused on performance, resilience, and real-time data orchestration using React and Next.js 15.
 
 ## 🚀 Technical Highlights
