@@ -1,6 +1,6 @@
 # MarketStream: Professional Market Data Interface
 
-A high-frequency trading dashboard prototype designed to demonstrate "Staff-Level" engineering principles in React, Next.js 15, and real-time data orchestration.
+A high-frequency trading dashboard prototype focused on performance, resilience, and real-time data orchestration using React and Next.js 15.
 
 ## 🚀 Technical Highlights
 
@@ -44,10 +44,8 @@ pnpm test
 
 ## ☁️ Deployment
 
-This project is configured for **Azure Static Web Apps**. It utilizes a "Hybrid" deployment model, where the Next.js App Router and API Proxy routes are deployed as managed Azure Functions.
+This project is configured for **Azure Static Web Apps**. It utilises a "Hybrid" deployment model, where the Next.js App Router and API Proxy routes are deployed as managed Azure Functions.
 
 - **Config**: `staticwebapp.config.json`
 - **CI/CD**: GitHub Actions (triggered on push to `main`)
 
----
-&copy; 2026 Colin Bacon &bull; Senior Software Engineer
