@@ -18,7 +18,7 @@ interface MarketCardProps {
 }
 
 export function MarketCard({ symbol, onRemove }: MarketCardProps) {
-  const { data, history, status, isConnected } = useMarketStream({
+  const { data, history, status, isConnected, hasError } = useMarketStream({
     topic: symbol,
   });
   const [priceColour, setPriceColour] = useState<
@@ -104,6 +104,15 @@ export function MarketCard({ symbol, onRemove }: MarketCardProps) {
             </div>
             <PriceChart data={history} colour={chartColour} />
           </>
+        ) : hasError ? (
+          <div className="flex flex-col items-center justify-center py-6 text-center space-y-1">
+            <p className="text-[10px] text-destructive font-bold uppercase tracking-widest">
+              Data Unavailable
+            </p>
+            <p className="text-[9px] text-muted-foreground leading-tight px-2">
+              Failed to connect to the market service.
+            </p>
+          </div>
         ) : (
           <div className="animate-pulse space-y-4">
             <div className="space-y-2">

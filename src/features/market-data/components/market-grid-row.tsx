@@ -16,7 +16,7 @@ interface MarketGridRowProps {
  * Ensures that price updates only trigger a re-render of this specific row.
  */
 export function MarketGridRow({ symbol }: MarketGridRowProps) {
-  const { data } = useMarketStream({ topic: symbol });
+  const { data, hasError } = useMarketStream({ topic: symbol });
   const [flash, setFlash] = useState<
     "bg-success/5" | "bg-destructive/5" | null
   >(null);
@@ -55,10 +55,14 @@ export function MarketGridRow({ symbol }: MarketGridRowProps) {
 
   if (!data) {
     return (
-      <TableRow className="h-11 border-b animate-pulse">
+      <TableRow className="h-11 border-b">
         <TableCell className="font-bold">{symbol.replace(/^t/, "")}</TableCell>
         <TableCell colSpan={3} className="text-xs text-muted-foreground italic">
-          Connecting...
+          {hasError ? (
+            <span className="text-destructive font-medium">Connection failed</span>
+          ) : (
+            <span className="animate-pulse">Connecting...</span>
+          )}
         </TableCell>
       </TableRow>
     );

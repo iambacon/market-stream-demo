@@ -22,15 +22,13 @@ export async function getTopAssets(): Promise<Asset[]> {
  * Bypasses CORS and provides an additional layer of resilience.
  */
 export async function getAssetHistory(symbol: string, limit = 30) {
-  try {
-    // Calling our internal Next.js API route
-    const response = await fetch(`/api/market/history?symbol=${symbol}&limit=${limit}`);
-    
-    if (!response.ok) throw new Error('Proxy history fetch failed');
-    
-    return await response.json();
-  } catch (error) {
-    console.error('AssetService: Failed to fetch history via proxy for', symbol, error);
-    return [];
+  // Calling our internal Next.js API route
+  const response = await fetch(`/api/market/history?symbol=${symbol}&limit=${limit}`);
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to fetch market history');
   }
+  
+  return await response.json();
 }

@@ -36,14 +36,21 @@ export function useMarketStream({
   const [status, setStatus] = useState<ConnectionStatus>(
     marketStream.getStatus(),
   );
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     // 2. Fetch history only if the cache is empty
     async function loadHistory() {
       if (cached.history.length === 0) {
-        const snapshot = await getAssetHistory(topic, historyLimit);
-        marketStream.setCachedHistory(topic, snapshot);
-        setHistory(snapshot);
+        try {
+          const snapshot = await getAssetHistory(topic, historyLimit);
+          marketStream.setCachedHistory(topic, snapshot);
+          setHistory(snapshot);
+          setHasError(false);
+        } catch (error) {
+          console.error(`useMarketStream: Failed to load history for ${topic}`, error);
+          setHasError(true);
+        }
       }
     }
 
@@ -78,6 +85,7 @@ export function useMarketStream({
     data,
     history,
     status,
+    hasError,
     isConnected: status === "connected",
   };
 }
