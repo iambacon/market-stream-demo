@@ -17,7 +17,6 @@ The `MarketStreamService` is built for production stability:
 Built on the principle of **Refined Restraint**, the UI prioritises data clarity over visual noise:
 - **OKLCH Colour Space**: All design tokens use perceptual uniformity for high-contrast accessibility.
 - **Focused UI Components**: A custom, pruned UI library built on **Base UI** and **Tailwind 4**, optimised for performance and minimal bundle footprint.
-- **British English Standardisation**: Consistent terminology across all user-facing strings and internal documentation.
 
 ## 🛠 Tech Stack
 
