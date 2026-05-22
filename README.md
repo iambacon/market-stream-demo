@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MarketStream: Professional Market Data Interface
 
-## Getting Started
+A high-frequency trading dashboard prototype designed to demonstrate "Staff-Level" engineering principles in React, Next.js 15, and real-time data orchestration.
 
-First, run the development server:
+## 🚀 Technical Highlights
+
+### 1. Atomic Rendering Architecture
+The dashboard utilises an **Atomic Rendering** strategy to handle high-frequency WebSocket updates. Instead of re-rendering the entire dashboard or even the table, each row (`MarketGridRow`) and card (`MarketCard`) maintains its own isolated subscription to the market stream. This ensures O(1) render performance relative to the size of the watchlist.
+
+### 2. Institutional-Grade Resilience
+The `MarketStreamService` is built for production stability:
+- **Exponential Backoff**: Automatic reconnection logic with jitter to prevent server thundering herds.
+- **Heartbeat Watchdog**: A client-side watchdog that monitors connection "staleness" and force-reconnects if the data stream hangs.
+- **Shared Data Cache**: A singleton service manages a central data cache, ensuring that switching between "Grid" and "Card" views is instantaneous with zero data loss or loading states.
+
+### 3. "The Calm Stream" Design System
+Built on the principle of **Refined Restraint**, the UI prioritises data clarity over visual noise:
+- **OKLCH Colour Space**: All design tokens use perceptual uniformity for high-contrast accessibility.
+- **Surgical UI Components**: A custom, pruned UI library built on **Base UI** and **Tailwind 4**, optimised for performance and minimal bundle footprint.
+- **British English Standardisation**: Consistent terminology across all user-facing strings and internal documentation.
+
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript (Strict Mode)
+- **Styling**: Tailwind CSS 4
+- **Real-time**: WebSockets (Bitfinex API)
+- **UI Primitives**: Base UI (Headless)
+- **Testing**: Vitest
+- **Deployment**: Azure Static Web Apps (Hybrid Rendering)
+
+## 📦 Getting Started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Run development server
 pnpm dev
-# or
-bun dev
+
+# Run unit tests
+pnpm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ☁️ Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project is configured for **Azure Static Web Apps**. It utilizes a "Hybrid" deployment model, where the Next.js App Router and API Proxy routes are deployed as managed Azure Functions.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimise and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Config**: `staticwebapp.config.json`
+- **CI/CD**: GitHub Actions (triggered on push to `main`)
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+&copy; 2026 Colin Bacon &bull; Senior Software Engineer
