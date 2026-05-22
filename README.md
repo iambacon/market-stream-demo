@@ -7,7 +7,7 @@ A high-frequency trading dashboard prototype focused on performance, resilience,
 ### 1. Atomic Rendering Architecture
 The dashboard utilises an **Atomic Rendering** strategy to handle high-frequency WebSocket updates. Instead of re-rendering the entire dashboard or even the table, each row (`MarketGridRow`) and card (`MarketCard`) maintains its own isolated subscription to the market stream. This ensures O(1) render performance relative to the size of the watchlist.
 
-### 2. Institutional-Grade Resilience
+### 2. Connection Stability and Resilience
 The `MarketStreamService` is built for production stability:
 - **Exponential Backoff**: Automatic reconnection logic with jitter to prevent server thundering herds.
 - **Heartbeat Watchdog**: A client-side watchdog that monitors connection "staleness" and force-reconnects if the data stream hangs.
