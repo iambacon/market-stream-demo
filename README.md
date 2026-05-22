@@ -13,7 +13,7 @@ The `MarketStreamService` is built for production stability:
 - **Heartbeat Watchdog**: A client-side watchdog that monitors connection "staleness" and force-reconnects if the data stream hangs.
 - **Shared Data Cache**: A singleton service manages a central data cache, ensuring that switching between "Grid" and "Card" views is instantaneous with zero data loss or loading states.
 
-### 3. "The Calm Stream" Design System
+### 3. Design System
 The UI prioritises data clarity over visual noise:
 - **OKLCH Colour Space**: All design tokens use perceptual uniformity for high-contrast accessibility.
 - **Focused UI Components**: A custom, pruned UI library built on **Base UI** and **Tailwind 4**, optimised for performance and minimal bundle footprint.
