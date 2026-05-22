@@ -1,4 +1,4 @@
-# MarketStream: Professional Market Data Interface
+# MarketStream
 
 A high-frequency trading dashboard prototype focused on performance, resilience, and real-time data orchestration using React and Next.js 15.
 
