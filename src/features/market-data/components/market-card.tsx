@@ -10,6 +10,7 @@ import {
 } from "@/features/shared/ui/card";
 import { PriceChart } from "./price-chart";
 import { useMarketStream } from "../hooks/use-market-stream";
+import { formatMarketVolume } from "../lib/format-market-value";
 import { cn } from "@/lib/utils";
 
 interface MarketCardProps {
@@ -18,9 +19,14 @@ interface MarketCardProps {
 }
 
 export function MarketCard({ symbol, onRemove }: MarketCardProps) {
-  const { data, history, status, isConnected, hasError } = useMarketStream({
-    topic: symbol,
-  });
+  const {
+    data,
+    history,
+    status,
+    isConnected,
+    historyError,
+    connectionError,
+  } = useMarketStream({ topic: symbol });
   const [priceColour, setPriceColour] = useState<
     "text-foreground" | "text-success" | "text-destructive"
   >("text-foreground");
@@ -73,8 +79,8 @@ export function MarketCard({ symbol, onRemove }: MarketCardProps) {
                 e.stopPropagation();
                 onRemove();
               }}
-              className="opacity-0 group-hover:opacity-100 absolute top-2 right-2 h-6 w-6 flex items-center justify-center rounded hover:bg-muted transition-opacity"
-              aria-label="Remove asset"
+              className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 absolute top-2 right-2 h-6 w-6 flex items-center justify-center rounded hover:bg-muted transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={`Remove ${symbol}`}
             >
               <X className="h-3 w-3 text-muted-foreground hover:text-destructive" />
             </button>
@@ -98,19 +104,24 @@ export function MarketCard({ symbol, onRemove }: MarketCardProps) {
                 })}
               </div>
               <p className="text-[10px] font-mono text-muted-foreground/80 tabular-nums">
-                VOL {Number(data.volume).toFixed(1)}k &bull;{" "}
-                {new Date(data.timestamp as string).toLocaleTimeString()}
+                VOL {formatMarketVolume(data.volume)} &bull;{" "}
+                {new Date(data.timestamp).toLocaleTimeString()}
               </p>
             </div>
             <PriceChart data={history} colour={chartColour} />
+            {historyError && (
+              <p className="text-[9px] text-muted-foreground">
+                Historical snapshot unavailable.
+              </p>
+            )}
           </>
-        ) : hasError ? (
+        ) : connectionError ? (
           <div className="flex flex-col items-center justify-center py-6 text-center space-y-1">
             <p className="text-[10px] text-destructive font-bold uppercase tracking-widest">
-              Data Unavailable
+              Stream Interrupted
             </p>
             <p className="text-[9px] text-muted-foreground leading-tight px-2">
-              Failed to connect to the market service.
+              Reconnecting to the market service.
             </p>
           </div>
         ) : (

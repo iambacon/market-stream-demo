@@ -1,10 +1,20 @@
-export type TransformedMarketData = Record<string, unknown>;
+export interface HistoryPoint {
+  value: number;
+  timestamp: string;
+}
 
-export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected';
+export interface MarketData {
+  bid: number;
+  ask: number;
+  volume: number;
+  timestamp: string;
+}
+
+export type ConnectionStatus = "connecting" | "connected" | "disconnected";
 
 export interface StreamEvent {
   topic: string;
-  data: Record<string, unknown>;
+  data: MarketData;
 }
 
 export interface Asset {

@@ -2,7 +2,7 @@
 
 **[Live Demo](https://green-meadow-0c999a203.7.azurestaticapps.net/)**
 
-A high-frequency trading dashboard prototype focused on performance, resilience, and real-time data orchestration using React and Next.js 15.
+A high-frequency trading dashboard prototype focused on performance, resilience, and real-time data orchestration using React and Next.js 16.
 
 ## 🚀 Technical Highlights
 
@@ -13,6 +13,7 @@ The dashboard utilises an **Atomic Rendering** strategy to handle high-frequency
 The `MarketStreamService` is built for production stability:
 - **Exponential Backoff**: Automatic reconnection logic with jitter to prevent server thundering herds.
 - **Heartbeat Watchdog**: A client-side watchdog that monitors connection "staleness" and force-reconnects if the data stream hangs.
+- **Reference-counted Channels**: Symbols share one upstream subscription and are unsubscribed when the final local consumer leaves.
 - **Shared Data Cache**: A singleton service manages a central data cache, ensuring that switching between "Grid" and "Card" views is instantaneous with zero data loss or loading states.
 
 ### 3. Design System
@@ -22,7 +23,7 @@ The UI prioritises data clarity over visual noise:
 
 ## 🛠 Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript (Strict Mode)
 - **Styling**: Tailwind CSS 4
 - **Real-time**: WebSockets (Bitfinex API)
@@ -41,6 +42,9 @@ pnpm dev
 
 # Run unit tests
 pnpm test
+
+# Run the complete quality gate
+pnpm verify
 ```
 
 ## ☁️ Deployment
@@ -49,4 +53,3 @@ This project is configured for **Azure Static Web Apps**. It utilises a "Hybrid"
 
 - **Config**: `staticwebapp.config.json`
 - **CI/CD**: GitHub Actions (triggered on push to `main`)
-

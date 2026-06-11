@@ -6,6 +6,8 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+    restoreMocks: true,
   },
   resolve: {
     alias: {

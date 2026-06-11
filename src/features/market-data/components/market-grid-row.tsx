@@ -3,6 +3,7 @@
 import { useMemo, useEffect, useRef, useState } from "react";
 import { TableCell, TableRow } from "@/features/shared/ui/table";
 import { useMarketStream } from "../hooks/use-market-stream";
+import { formatMarketVolume } from "../lib/format-market-value";
 import { cn } from "@/lib/utils";
 
 interface MarketGridRowProps {
@@ -10,7 +11,7 @@ interface MarketGridRowProps {
 }
 
 export function MarketGridRow({ symbol }: MarketGridRowProps) {
-  const { data, hasError } = useMarketStream({ topic: symbol });
+  const { data, connectionError } = useMarketStream({ topic: symbol });
   const [flash, setFlash] = useState<
     "bg-success/5" | "bg-destructive/5" | null
   >(null);
@@ -42,7 +43,7 @@ export function MarketGridRow({ symbol }: MarketGridRowProps) {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }),
-      `${Number(data.volume).toFixed(1)}k`,
+      formatMarketVolume(data.volume),
     ];
   }, [data, symbol]);
 
@@ -51,8 +52,8 @@ export function MarketGridRow({ symbol }: MarketGridRowProps) {
       <TableRow className="h-11 border-b">
         <TableCell className="font-bold">{symbol.replace(/^t/, "")}</TableCell>
         <TableCell colSpan={3} className="text-xs text-muted-foreground italic">
-          {hasError ? (
-            <span className="text-destructive font-medium">Connection failed</span>
+          {connectionError ? (
+            <span className="text-destructive font-medium">Reconnecting...</span>
           ) : (
             <span className="animate-pulse">Connecting...</span>
           )}

@@ -17,6 +17,7 @@ export default function Home() {
             <a
               href="https://github.com/iambacon"
               target="_blank"
+              rel="noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               GitHub
@@ -24,6 +25,7 @@ export default function Home() {
             <a
               href="https://iambacon.co.uk"
               target="_blank"
+              rel="noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
               Portfolio

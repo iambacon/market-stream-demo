@@ -1,16 +1,11 @@
 import { useState, useEffect } from "react";
 import { marketStream } from "../api/market-stream-service";
 import { getAssetHistory } from "../api/asset-service";
-import { ConnectionStatus, TransformedMarketData } from "../types";
+import { ConnectionStatus, HistoryPoint, MarketData } from "../types";
 
 interface UseMarketStreamOptions {
   topic: string;
   historyLimit?: number;
-}
-
-interface HistoryPoint {
-  value: number;
-  timestamp: string;
 }
 
 export function useMarketStream({
@@ -19,29 +14,35 @@ export function useMarketStream({
 }: UseMarketStreamOptions) {
   const cached = marketStream.getCachedData(topic);
 
-  const initialData = cached.latest
-    ? { ...cached.latest, timestamp: new Date().toISOString() }
-    : null;
-  const [data, setData] = useState<TransformedMarketData | null>(initialData);
+  const [data, setData] = useState<MarketData | null>(cached.latest);
   const [history, setHistory] = useState<HistoryPoint[]>(
     cached.history.slice(-historyLimit),
   );
   const [status, setStatus] = useState<ConnectionStatus>(
     marketStream.getStatus(),
   );
-  const [hasError, setHasError] = useState(false);
+  const [historyError, setHistoryError] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
 
   useEffect(() => {
+    let isActive = true;
+    const currentCache = marketStream.getCachedData(topic);
+
     async function loadHistory() {
-      if (cached.history.length === 0) {
+      if (currentCache.history.length === 0) {
         try {
           const snapshot = await getAssetHistory(topic, historyLimit);
+          if (!isActive) return;
+
           marketStream.setCachedHistory(topic, snapshot);
-          setHistory(snapshot);
-          setHasError(false);
+          setHistory(
+            marketStream.getCachedData(topic).history.slice(-historyLimit),
+          );
         } catch (error) {
+          if (!isActive) return;
+
           console.error(`useMarketStream: Failed to load history for ${topic}`, error);
-          setHasError(true);
+          setHistoryError(true);
         }
       }
     }
@@ -50,32 +51,33 @@ export function useMarketStream({
 
     const unsubStatus = marketStream.onStatusChange((newStatus) => {
       setStatus(newStatus);
+      if (newStatus === "connected") {
+        setConnectionError(false);
+      } else if (newStatus === "disconnected") {
+        setConnectionError(true);
+      }
     });
 
-    marketStream.connect();
-
     const unsubTopic = marketStream.subscribe(topic, (event) => {
-      const transformed = {
-        ...event.data,
-        timestamp: new Date().toISOString(),
-      };
-      setData(transformed);
+      setData(event.data);
 
       const updatedCache = marketStream.getCachedData(topic);
       setHistory(updatedCache.history.slice(-historyLimit));
     });
 
     return () => {
+      isActive = false;
       unsubStatus();
       unsubTopic();
     };
-  }, [topic, historyLimit, cached.history.length]);
+  }, [topic, historyLimit]);
 
   return {
     data,
     history,
     status,
-    hasError,
+    historyError,
+    connectionError,
     isConnected: status === "connected",
   };
 }
